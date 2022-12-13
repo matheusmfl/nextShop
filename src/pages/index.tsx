@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 import { useKeenSlider } from "keen-slider/react";
-
+import Link from "next/link";
 import { HomeContainer, Product } from "../styles/pages/home";
 
 import "keen-slider/keen-slider.min.css";
@@ -30,18 +30,20 @@ export default function Home({ products }: homeProducts) {
     <HomeContainer ref={sliderRef} className="keen-slider">
       {products.map((product) => {
         return (
-          <Product key={product.id} className="keen-slider__slide">
-            <Image
-              src={product.imageUrl}
-              width={520}
-              height={480}
-              alt="teste"
-            />
-            <footer>
-              <strong>{product.name}</strong>
-              <span>R$ {product.price}</span>
-            </footer>
-          </Product>
+          <Link key={product.id} href={`products/${product.id}`}>
+            <Product className="keen-slider__slide">
+              <Image
+                src={product.imageUrl}
+                width={520}
+                height={480}
+                alt="teste"
+              />
+              <footer>
+                <strong>{product.name}</strong>
+                <span>R$ {product.price}</span>
+              </footer>
+            </Product>
+          </Link>
         );
       })}
     </HomeContainer>
@@ -60,7 +62,10 @@ export const getServerSideProps: GetServerSideProps = async () => {
       id: products.id,
       name: products.name,
       imageUrl: products.images[0],
-      price: price.unit_amount! / 100,
+      price: new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+      }).format(price.unit_amount! / 100),
     };
   });
 
